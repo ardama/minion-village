@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Minion Village</title>
+
+<script src="js/vendor/jquery.min.js"></script>
+<script src="js/vendor/angular.min.js"></script>
+<script src="js/main.js"></script>
+<script src="js/classes/game.js"></script>
+<script src="js/classes/building.js"></script>
+
+</head>
+<body ng-app="GameApp" ng-controller="GameController">
+
+
+<div ng-bind="g.time"></div>
+<div ng-bind="g.population"></div>
+<div ng-bind="g.minions.idle.melee"></div>
+<div ng-bind="g.minions.idle.ranged"></div>
+<div ng-bind="g.minions.idle.cannon"></div>
+<div ng-bind="g.timers.minion"></div>
+</body>
