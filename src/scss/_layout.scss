@@ -1,0 +1,42 @@
+#content-wrapper {
+}
+
+#content {
+  position: relative;
+  height: calc(100vh - #{$headerHeight});
+
+  overflow-y: auto;
+
+  background-color: #444;
+}
+
+.column {
+  position: absolute;
+  top: 0;
+
+  min-height: calc(100vh - #{$headerHeight});
+}
+
+#column-1 {
+  left: 0;
+
+  width: $columnWidth;
+
+  background-color: #222;
+}
+
+#column-2 {
+  left: $columnWidth;
+
+  width: calc(100% - 2 * #{$columnWidth});
+
+}
+
+#column-3 {
+  right: 0;
+
+  width: $columnWidth;
+
+  background-color: #666;
+
+}

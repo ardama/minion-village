@@ -9,31 +9,48 @@
 <script src="js/classes/game.js"></script>
 <script src="js/classes/building.js"></script>
 
+<link href="css/style.css" rel="stylesheet" type="text/css">
+
 </head>
 <body ng-app="GameApp" ng-controller="GameController">
+<div id="header">
 
+</div>
 
-<div>Time: {{g.time}}</div>
-<div>Population: {{g.minionCounts.all}}</div>
-<div>Gold: {{g.gold}}</div>
-<div>Knowledge: {{g.knowldge}}</div>
-<div>Favor: {{g.favor}}</div>
-<div>Boots: {{g.gear.boots}}</div>
-<div>Blades: {{g.gear.blades}}</div>
-<div>Rings: {{g.gear.rings}}</div>
-<div>Shields: {{g.gear.shields}}</div>
+<div id="content-wrapper">
+  <div id="content">
+    <div id="column-1" class="column">
+      <div>Version: {{version}}</div>
+      <div>Time: {{g.time}}</div>
+      <div>Time until next minion: {{g.minionTime - g.timers.minion}}</div>
+      <div>Population: {{g.minionCounts.all}}</div>
+      <div>Gold: {{g.gold}}</div>
+      <div>Knowledge: {{g.knowledge}}</div>
+      <div>Favor: {{g.favor}}</div>
+      <div>Boots: {{g.gear.boots}}</div>
+      <div>Blades: {{g.gear.blades}}</div>
+      <div>Rings: {{g.gear.rings}}</div>
+      <div>Shields: {{g.gear.shields}}</div>
+    </div>
+    <div id="column-2" class="column">
+      <div ng-repeat="(buildingName, minionMap) in g.minions">
+        <div>{{buildingName}}</div>
+        <div ng-repeat="(minionType, count) in minionMap">
+          <div>{{minionType}}: {{count}}</div>
+        </div>
+      </div>
+    </div>
+    <div id="column-3" class="column">
 
-<div>{{g.minions.hut.melee}}</div>
-<div>{{g.minions.hut.ranged}}</div>
-<div>{{g.minions.hut.cannon}}</div>
-<div>Time until next minion: {{g.minionTime - g.timers.minion}}</div>
-
-<div ng-repeat="(buildingName, minionMap) in g.minions">
-  <div>{{buildingName}}</div>
-  <div ng-repeat="(minionType, count) in minionMap">
-    <div>{{minionType}}: {{count}}</div>
+    </div>
   </div>
 </div>
+
+<div id="footer">
+
+</div>
+
+
 
 
 </body>
