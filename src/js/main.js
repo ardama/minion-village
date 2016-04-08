@@ -1,25 +1,40 @@
-var version = '0.0.1';
+var version = '0.0.2';
 
 // Buildings
-var HOUSE = 'house';
+var HUT = 'hut';
 var FARM = 'farm';
-var SCHOOL = 'school';
-var TEMPLE = 'temple';
+var WORKSHOP = 'workshop';
+var LIBRARY = 'library';
+var SHRINE = 'shrine';
 var TOWER = 'tower';
+
+var STABLE = 'stable';
 var ARMORY = 'armory';
 var CAPITOL = 'capitol';
 var LAB = 'laboratory';
 
-var BUILDINGS = [HOUSE, FARM, SCHOOL, TEMPLE, TOWER, ARMORY, CAPITOL, LAB];
+var BUILDINGS = [HUT, FARM, WORKSHOP, LIBRARY, SHRINE, TOWER, STABLE, ARMORY, CAPITOL, LAB];
 
 // Minion types
 var MELEE = 'melee';
 var RANGED = 'ranged';
 var CANNON = 'cannon';
 var SUPER = 'super';
+var ALL = 'all';
 
-var MINION_TYPES = [MELEE, RANGED, CANNON, SUPER];
+var MINION_TYPE = [MELEE, RANGED, CANNON, SUPER, ALL];
 
+// Minion stats
+var OFFENSE = 'offense';
+var DEFENSE = 'defense';
+var STRENGTH = 'strength';
+var SKILL = 'skill';
+
+// Mission gear
+var BOOTS = 'boots';
+var BLADES = 'blades';
+var RINGS = 'rings';
+var SHIELDS = 'shields';
 
 
 var GameApp = angular.module('GameApp', []);

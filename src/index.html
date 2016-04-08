@@ -13,10 +13,27 @@
 <body ng-app="GameApp" ng-controller="GameController">
 
 
-<div ng-bind="g.time"></div>
-<div ng-bind="g.population"></div>
-<div ng-bind="g.minions.idle.melee"></div>
-<div ng-bind="g.minions.idle.ranged"></div>
-<div ng-bind="g.minions.idle.cannon"></div>
-<div ng-bind="g.timers.minion"></div>
+<div>Time: {{g.time}}</div>
+<div>Population: {{g.minionCounts.all}}</div>
+<div>Gold: {{g.gold}}</div>
+<div>Knowledge: {{g.knowldge}}</div>
+<div>Favor: {{g.favor}}</div>
+<div>Boots: {{g.gear.boots}}</div>
+<div>Blades: {{g.gear.blades}}</div>
+<div>Rings: {{g.gear.rings}}</div>
+<div>Shields: {{g.gear.shields}}</div>
+
+<div>{{g.minions.hut.melee}}</div>
+<div>{{g.minions.hut.ranged}}</div>
+<div>{{g.minions.hut.cannon}}</div>
+<div>Time until next minion: {{g.minionTime - g.timers.minion}}</div>
+
+<div ng-repeat="(buildingName, minionMap) in g.minions">
+  <div>{{buildingName}}</div>
+  <div ng-repeat="(minionType, count) in minionMap">
+    <div>{{minionType}}: {{count}}</div>
+  </div>
+</div>
+
+
 </body>
