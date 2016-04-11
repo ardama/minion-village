@@ -34,51 +34,56 @@ Game.prototype.Init = function(scope) {
   this.gearRateBase = 0;
   this.gearRateBonus = 1;
 
+  // missions
+  this.expeditionLevel = 1;
+  this.raidLevel = 1;
+  this.waveLevel = 1;
+
   // Event Timers
   this.minionTime = 5;
-  this.exploreTime = 0;
-  this.attackTime = 0;
-  this.defenseTime = 0;
+  this.expeditionTime = 2 * 60;
+  this.raidTime = 3 * 60;
+  this.waveTime = 10 * 60;
 
   this.timers = {};
   this.timers.minion = 0;
-  this.timers.explore = 0;
-  this.timers.attack = 0;
-  this.timers.defense = 0;
+  this.timers.expedition = 0;
+  this.timers.raid = 0;
+  this.timers.wave = 0;
 
   // Minions
   this.minionOrder = 0;
   this.populationCap = 0;
 
   this.minions = {};
-  this.minions.hut = {melee: 0, ranged: 0, cannon: 0, super: 0, all: 0};
-  this.minions.farm = {melee: 0, ranged: 0, cannon: 0, super: 0, all: 0};
-  this.minions.workshop = {melee: 0, ranged: 0, cannon: 0, super: 0, all: 0};
-  this.minions.shrine = {melee: 0, ranged: 0, cannon: 0, super: 0, all: 0};
-  this.minions.library = {melee: 0, ranged: 0, cannon: 0, super: 0, all: 0};
-  this.minions.tower = {melee: 0, ranged: 0, cannon: 0, super: 0, all: 0};
+  this.minions[HUT] = {melee: 0, caster: 0, siege: 0, all: 0};
+  this.minions[FARM] = {melee: 0, caster: 0, siege: 0, all: 0};
+  this.minions[WORKSHOP] = {melee: 0, caster: 0, siege: 0, all: 0};
+  this.minions[SHRINE] = {melee: 0, caster: 0, siege: 0, all: 0};
+  this.minions[LIBRARY] = {melee: 0, caster: 0, siege: 0, all: 0};
+  this.minions[TOWER] = {melee: 0, caster: 0, siege: 0, all: 0};
 
-  this.minions.raid = {melee: 0, ranged: 0, cannon: 0, super: 0, all: 0};
-  this.minions.raidRally = {melee: 0, ranged: 0, cannon: 0, super: 0, all: 0};
-  this.minions.explore = {melee: 0, ranged: 0, cannon: 0, super: 0, all: 0};
-  this.minions.exploreRally = {melee: 0, ranged: 0, cannon: 0, super: 0, all: 0};
+  this.minions.raid = {melee: 0, caster: 0, siege: 0, all: 0};
+  this.minions.raidRally = {melee: 0, caster: 0, siege: 0, all: 0};
+  this.minions.expedition = {melee: 0, caster: 0, siege: 0, all: 0};
+  this.minions.expeditionRally = {melee: 0, caster: 0, siege: 0, all: 0};
 
-  this.minionCounts = {melee: 0, ranged: 0, cannon: 0, super: 0, all: 0};
+  this.minionCounts = {melee: 0, caster: 0, siege: 0, all: 0};
 
   this.minionStats = {};
   this.minionStats.melee = {offense: 1, defense: 2, strength: 2, skill: 1};
-  this.minionStats.ranged = {offense: 2, defense: 1, strength: 1, skill: 2};
-  this.minionStats.cannon = {offense: 2, defense: 2, strength: 2, skill: 2};
-  this.minionStats.super = {offense: 3, defense: 3, strength: 3, skill: 3};
+  this.minionStats.caster = {offense: 2, defense: 1, strength: 1, skill: 2};
+  this.minionStats.siege = {offense: 2, defense: 2, strength: 2, skill: 2};
 
   this.minionStatBonuses = {};
   this.minionStatBonuses.melee = {offense: 1, defense: 1, strength: 1, skill: 1};
-  this.minionStatBonuses.ranged = {offense: 1, defense: 1, strength: 1, skill: 1};
-  this.minionStatBonuses.cannon = {offense: 1, defense: 1, strength: 1, skill: 1};
-  this.minionStatBonuses.super = {offense: 1, defense: 1, strength: 1, skill: 1};
+  this.minionStatBonuses.caster = {offense: 1, defense: 1, strength: 1, skill: 1};
+  this.minionStatBonuses.siege = {offense: 1, defense: 1, strength: 1, skill: 1};
+
 
   // Buildings
   this.buildings = Building.initializeBuildings(this);
+
 
 };
 
@@ -122,7 +127,7 @@ Game.prototype.applyTime = function(time) {
   this.addGear(this.gearRate * time);
 
   this.addMinionTime(time);
-  this.addExploreTime(time);
+  this.addExpeditionTime(time);
   this.addRaidTime(time);
   this.addWaveTime(time);
 
@@ -139,13 +144,40 @@ Game.prototype.addMinionTime = function(time) {
   this.timers.minion = Math.min(this.timers.minion, this.minionTime);
 };
 
-Game.prototype.addExploreTime = function(time) {
+Game.prototype.addExpeditionTime = function(time) {
+  if(isNaN(this.timers.expedition)) {
+    return;
+  }
+
+  this.timers.expedition += time;
+  if (this.timers.expedition > this.expeditionTime) {
+    this.getExpeditionOutcome();
+  }
+  this.timers.expedition = null;
 };
 
 Game.prototype.addRaidTime = function(time) {
+  if(isNaN(this.timers.raid)) {
+    return;
+  }
+
+  this.timers.raid += time;
+  if (this.timers.raid > this.raidTime) {
+    this.getRaidOutcome();
+  }
+  this.timers.raid = null;
 };
 
 Game.prototype.addWaveTime = function(time) {
+  if(isNaN(this.timers.wave)) {
+    return;
+  }
+
+  this.timers.wave += time;
+  if (this.timers.wave > this.waveTime) {
+    this.getWaveOutcome();
+  }
+  this.timers.wave = 0;
 };
 
 /////////////////////////////////////////////////////////
@@ -164,7 +196,7 @@ Game.prototype.addFavor = function(favor) {
 };
 
 Game.prototype.addGear = function(count) {
-  var gear = this.buildings.workshop.data.type
+  var gear = this.buildings[WORKSHOP].data.type
   this.gear[gear] += count;
 };
 
@@ -178,14 +210,14 @@ Game.prototype.addMinions = function(minions) {
   // Add full sets of minions
   var sets = Math.floor(Math.min(minions / 7, (this.populationCap - this.minionCounts.all) / 7));
   if (sets > 0) {
-    this.minions.hut.melee += 3 * sets;
-    this.minions.hut.ranged += 3 * sets;
-    this.minions.hut.cannon += 1 * sets;
-    this.minions.hut.all += 7 * sets;
+    this.minions[HUT].melee += 3 * sets;
+    this.minions[HUT].caster += 3 * sets;
+    this.minions[HUT].siege += 1 * sets;
+    this.minions[HUT].all += 7 * sets;
 
     this.minionCounts.melee += 3 * sets;
-    this.minionCounts.ranged += 3 * sets;
-    this.minionCounts.cannon += 1 * sets;
+    this.minionCounts.caster += 3 * sets;
+    this.minionCounts.siege += 1 * sets;
     this.minionCounts.all += 7 * sets;
 
     minions -= 7 * sets;
@@ -193,18 +225,18 @@ Game.prototype.addMinions = function(minions) {
   }
 
   // Add remaining individual minions
-  while (minions > 0 && this.buildings.hut.capacity - this.minionCounts.all > 0) {
+  while (minions > 0 && this.buildings[HUT].capacity - this.minionCounts.all > 0) {
     if (this.minionOrder < 3) {
-      this.minions.hut.melee++;
+      this.minions[HUT].melee++;
       this.minionCounts.melee++;
     } else if (this.minionOrder < 6) {
-      this.minions.hut.ranged++;
-      this.minionCounts.ranged++;
+      this.minions[HUT].caster++;
+      this.minionCounts.caster++;
     } else {
-      this.minions.hut.cannon++;
-      this.minionCounts.cannon++;
+      this.minions[HUT].siege++;
+      this.minionCounts.siege++;
     }
-    this.minions.hut.all++;
+    this.minions[HUT].all++;
     this.minionCounts.all++;
 
     minions--;
@@ -216,10 +248,10 @@ Game.prototype.addMinions = function(minions) {
 };
 
 Game.prototype.updateStats = function() {
-  this.goldRateBase = this.getMinionStatSum(this.minions.farm, STRENGTH) * this.buildings.farm.data.rate;
-  this.knowledgeRateBase = this.getMinionStatSum(this.minions.library, SKILL) * this.buildings.library.data.rate;
-  this.favorRateBase = this.getMinionStatSum(this.minions.shrine, SKILL) * this.buildings.shrine.data.rate;
-  this.gearRateBase = this.getMinionStatSum(this.minions.workshop, STRENGTH) * this.buildings.workshop.data.rate;
+  this.goldRateBase = this.getMinionStatSum(this.minions[FARM], STRENGTH) * this.buildings[FARM].data.rate;
+  this.knowledgeRateBase = this.getMinionStatSum(this.minions[LIBRARY], SKILL) * this.buildings[LIBRARY].data.rate;
+  this.favorRateBase = this.getMinionStatSum(this.minions[SHRINE], SKILL) * this.buildings[SHRINE].data.rate;
+  this.gearRateBase = this.getMinionStatSum(this.minions[WORKSHOP], STRENGTH) * this.buildings[WORKSHOP].data.rate;
 
   this.goldRateBonus = this.goldRateBonus;
   this.knowledgeRateBonus = this.knowledgeRateBonus;
@@ -266,6 +298,10 @@ Game.prototype.buyBuilding = function(buildingName, count) {
   count = count || 1;
 
   var building = this.buildings[buildingName];
+  if (building.unique && building.count > 0) {
+    return;
+  }
+
   var bought = 0;
   while (count--) {
     if (this.gold >= building.cost.gold &&
@@ -287,14 +323,35 @@ Game.prototype.buyBuilding = function(buildingName, count) {
   }
 };
 
+Game.prototype.launchExpedition = function() {
+  this.moveAllMinions(EXPEDITION_RALLY, EXPEDITION);
+  this.timers.expedition = 0;
+};
+
+
+Game.prototype.launchRaid = function() {
+  this.moveAllMinions(RAID_RALLY, RAID);
+  this.timers.raid = 0;
+
+};
+
+
+
+
 /////////////////////////////////////////////////////////
 // UTILITY FUNCTIONS ////////////////////////////////////
 /////////////////////////////////////////////////////////
+Game.prototype.moveAllMinions = function(currentBuilding, newBuilding) {
+  for (var i = 0; i < MINION_TYPES.length; i++) {
+    var type = MINION_TYPES[i];
+    if (currentBuildin)
+  }
+};
+
 Game.prototype.getMinionStatSum = function(object, stat) {
   var sum = 0;
   sum += object.melee * this.minionStats.melee[stat];
-  sum += object.ranged * this.minionStats.ranged[stat];
-  sum += object.cannon * this.minionStats.cannon[stat];
-  sum += object.super * this.minionStats.super[stat];
+  sum += object.caster * this.minionStats.caster[stat];
+  sum += object.siege * this.minionStats.siege[stat];
   return sum;
 };

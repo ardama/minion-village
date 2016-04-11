@@ -1,4 +1,4 @@
-var version = '0.0.3';
+var version = '0.0.4';
 
 // Buildings
 var HUT = 'hut';
@@ -13,16 +13,20 @@ var ARMORY = 'armory';
 var CAPITOL = 'capitol';
 var LAB = 'laboratory';
 
+var RAID = "raid";
+var RAID_RALLY = "raid rally";
+var EXPEDITION = "expedition";
+var EXPEDITION_RALLY = "expedition rally";
+
 var BUILDINGS = [HUT, FARM, WORKSHOP, LIBRARY, SHRINE, TOWER, STABLE, ARMORY, CAPITOL, LAB];
 
 // Minion types
 var MELEE = 'melee';
-var RANGED = 'ranged';
-var CANNON = 'cannon';
-var SUPER = 'super';
+var CASTER = 'caster';
+var SIEGE = 'siege';
 var ALL = 'all';
 
-var MINION_TYPE = [MELEE, RANGED, CANNON, SUPER, ALL];
+var MINION_TYPES = [MELEE, CASTER, SIEGE];
 
 // Minion stats
 var OFFENSE = 'offense';
@@ -35,6 +39,12 @@ var BOOTS = 'boots';
 var BLADES = 'blades';
 var RINGS = 'rings';
 var SHIELDS = 'shields';
+
+
+// Game constants
+var START_GOLD = 100;
+var SUPER_MINION_BONUS = 2;
+
 
 
 var GameApp = angular.module('GameApp', []);

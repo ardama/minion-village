@@ -68,5 +68,26 @@ Building.initializeBuildings = function(game) {
     {unique: true}
   );
 
+  buildings.raid = new Building(
+    game, RAID, 0,
+    {gold: 0, knowledge: 0, favor: 0},
+    {unique: true}
+  );
+  buildings.expedition = new Building(
+    game, EXPEDITION, 0,
+    {gold: 0, knowledge: 0, favor: 0},
+    {unique: true}
+  );
+  buildings.raidRally = new Building(
+    game, RAID_RALLY, 0,
+    {gold: 0, knowledge: 0, favor: 0},
+    {unique: true}
+  );
+  buildings.expeditionRally = new Building(
+    game, EXPEDITION_RALLY, 0,
+    {gold: 0, knowledge: 0, favor: 0},
+    {unique: true}
+  );
+
   return buildings;
 }
