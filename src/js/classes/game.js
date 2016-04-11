@@ -29,7 +29,7 @@ Game.prototype.Init = function(scope) {
   this.favorRateBase = 0;
   this.favorRateBonus = 1;
 
-  this.gear = {boots: 0, blades: 0, rings: 0, shields: 0};
+  this.gear = {machetes: 0, talismans: 0, blades: 0, rings: 0, shields: 0};
   this.gearRate = 0;
   this.gearRateBase = 0;
   this.gearRateBonus = 1;
@@ -63,27 +63,33 @@ Game.prototype.Init = function(scope) {
   this.minions[LIBRARY] = {melee: 0, caster: 0, siege: 0, all: 0};
   this.minions[TOWER] = {melee: 0, caster: 0, siege: 0, all: 0};
 
-  this.minions.raid = {melee: 0, caster: 0, siege: 0, all: 0};
-  this.minions.raidRally = {melee: 0, caster: 0, siege: 0, all: 0};
-  this.minions.expedition = {melee: 0, caster: 0, siege: 0, all: 0};
-  this.minions.expeditionRally = {melee: 0, caster: 0, siege: 0, all: 0};
+  this.minions[RAID] = {melee: 0, caster: 0, siege: 0, all: 0};
+  this.minions[RAID_RALLY] = {melee: 0, caster: 0, siege: 0, all: 0};
+  this.minions[EXPEDITION] = {melee: 0, caster: 0, siege: 0, all: 0};
+  this.minions[EXPEDITION_RALLY] = {melee: 0, caster: 0, siege: 0, all: 0};
 
   this.minionCounts = {melee: 0, caster: 0, siege: 0, all: 0};
 
   this.minionStats = {};
-  this.minionStats.melee = {offense: 1, defense: 2, strength: 2, skill: 1};
-  this.minionStats.caster = {offense: 2, defense: 1, strength: 1, skill: 2};
-  this.minionStats.siege = {offense: 2, defense: 2, strength: 2, skill: 2};
+  this.minionStats.melee = {damage: 1, durability: 2, strength: 2, skill: 1};
+  this.minionStats.caster = {damage: 2, durability: 1, strength: 1, skill: 2};
+  this.minionStats.siege = {damage: 2, durability: 2, strength: 2, skill: 2};
 
   this.minionStatBonuses = {};
-  this.minionStatBonuses.melee = {offense: 1, defense: 1, strength: 1, skill: 1};
-  this.minionStatBonuses.caster = {offense: 1, defense: 1, strength: 1, skill: 1};
-  this.minionStatBonuses.siege = {offense: 1, defense: 1, strength: 1, skill: 1};
+  this.minionStatBonuses.melee = {damage: 1, durability: 1, strength: 1, skill: 1};
+  this.minionStatBonuses.caster = {damage: 1, durability: 1, strength: 1, skill: 1};
+  this.minionStatBonuses.siege = {damage: 1, durability: 1, strength: 1, skill: 1};
 
 
   // Buildings
   this.buildings = Building.initializeBuildings(this);
 
+  // Monsters
+  this.monsters;
+  this.monsters[STABLE] = {};
+  this.monsters[RAID] = {};
+  this.monsters[RAID_RALLY] = {};
+  this.monsters[TOWER] = {};
 
 };
 
@@ -248,10 +254,10 @@ Game.prototype.addMinions = function(minions) {
 };
 
 Game.prototype.updateStats = function() {
-  this.goldRateBase = this.getMinionStatSum(this.minions[FARM], STRENGTH) * this.buildings[FARM].data.rate;
-  this.knowledgeRateBase = this.getMinionStatSum(this.minions[LIBRARY], SKILL) * this.buildings[LIBRARY].data.rate;
-  this.favorRateBase = this.getMinionStatSum(this.minions[SHRINE], SKILL) * this.buildings[SHRINE].data.rate;
-  this.gearRateBase = this.getMinionStatSum(this.minions[WORKSHOP], STRENGTH) * this.buildings[WORKSHOP].data.rate;
+  this.goldRateBase = this.getMinionStatSum(FARM, STRENGTH) * this.buildings[FARM].data.rate;
+  this.knowledgeRateBase = this.getMinionStatSum(LIBRARY, SKILL) * this.buildings[LIBRARY].data.rate;
+  this.favorRateBase = this.getMinionStatSum(SHRINE, SKILL) * this.buildings[SHRINE].data.rate;
+  this.gearRateBase = this.getMinionStatSum(WORKSHOP, STRENGTH) * this.buildings[WORKSHOP].data.rate;
 
   this.goldRateBonus = this.goldRateBonus;
   this.knowledgeRateBonus = this.knowledgeRateBonus;
@@ -332,26 +338,72 @@ Game.prototype.launchExpedition = function() {
 Game.prototype.launchRaid = function() {
   this.moveAllMinions(RAID_RALLY, RAID);
   this.timers.raid = 0;
-
 };
 
 
 
 
 /////////////////////////////////////////////////////////
-// UTILITY FUNCTIONS ////////////////////////////////////
+// OTHER GAME FUNCTIONS /////////////////////////////////
 /////////////////////////////////////////////////////////
 Game.prototype.moveAllMinions = function(currentBuilding, newBuilding) {
   for (var i = 0; i < MINION_TYPES.length; i++) {
     var type = MINION_TYPES[i];
-    if (currentBuildin)
   }
 };
 
-Game.prototype.getMinionStatSum = function(object, stat) {
+Game.prototype.getExpeditionOutcome = function() {
+  var strength = this.getMinionStatSum(EXPEDITION, STRENGTH);
+  var skill = this.getMinionStatSum(EXPEDITION, SKILL);
+
+  var loot;
+  var casualty;
+
+  for (var i = 0; i < MONSTERS.length; i++) {
+    var monsterName = MONSTERS[i];
+    var monster = this.monsters[monsterName];
+    if (monster.level >= this.expeditionLevel) {
+
+      monsters[monsterName] =
+    } else {
+      break;
+    }
+  }
+  var monsters = {};
+};
+
+Game.prototype.getRaidOutcome = function() {
+  var damage = this.getMinionStatSum(RAID, DAMAGE) + this.getMonsterStatSum(RAID, DAMAGE);
+  var durability = this.getMinionStatSum(RAID, DURABILITY) + this.getMonsterStatSum(RAID, DURABILITY);
+};
+
+Game.prototype.getWaveOutcome = function() {
+  var damage = this.getMinionStatSum(TOWER, DAMAGE) + this.getMonsterStatSum(TOWER, DAMAGE);
+  var durability = this.getMinionStatSum(TOWER, DURABILITY) + this.getMonsterStatSum(TOWER, DAMAGE);
+};
+
+/////////////////////////////////////////////////////////
+// UTILITY FUNCTIONS ////////////////////////////////////
+/////////////////////////////////////////////////////////
+Game.prototype.getMinionStatSum = function(buildingName, stat) {
+  var minions = this.minions[buildingName];
   var sum = 0;
-  sum += object.melee * this.minionStats.melee[stat];
-  sum += object.caster * this.minionStats.caster[stat];
-  sum += object.siege * this.minionStats.siege[stat];
+  sum += minions.melee * this.minionStats.melee[stat] * this.minionStatBonuses.melee[stat];
+  sum += minions.caster * this.minionStats.caster[stat] * this.minionStatBonuses.caster[stat];
+  sum += minions.siege * this.minionStats.siege[stat] * this.minionStatBonuses.siege[stat];
+  return sum;
+};
+
+Game.prototype.getMonsterStatSum = function(buildingName, stat) {
+  var monsters = this.monsters[buildingName];
+  var sum = 0;
+  for (var i = 0; i < MONSTERS.length; i++) {
+    var monsterName = MONSTERS[i];
+    var count = monsters[monsterName];
+    if (count) {
+      var monster = this.monsters[monsterName];
+      sum += count * monster.stats[stat];
+    }
+  }
   return sum;
 };

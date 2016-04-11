@@ -1,24 +1,4 @@
-var version = '0.0.4';
-
-// Buildings
-var HUT = 'hut';
-var FARM = 'farm';
-var WORKSHOP = 'workshop';
-var LIBRARY = 'library';
-var SHRINE = 'shrine';
-var TOWER = 'tower';
-
-var STABLE = 'stable';
-var ARMORY = 'armory';
-var CAPITOL = 'capitol';
-var LAB = 'laboratory';
-
-var RAID = "raid";
-var RAID_RALLY = "raid rally";
-var EXPEDITION = "expedition";
-var EXPEDITION_RALLY = "expedition rally";
-
-var BUILDINGS = [HUT, FARM, WORKSHOP, LIBRARY, SHRINE, TOWER, STABLE, ARMORY, CAPITOL, LAB];
+var version = '0.0.5';
 
 // Minion types
 var MELEE = 'melee';
@@ -29,13 +9,14 @@ var ALL = 'all';
 var MINION_TYPES = [MELEE, CASTER, SIEGE];
 
 // Minion stats
-var OFFENSE = 'offense';
-var DEFENSE = 'defense';
+var DAMAGE = 'damage';
+var DURABILITY = 'durability';
 var STRENGTH = 'strength';
 var SKILL = 'skill';
 
 // Mission gear
-var BOOTS = 'boots';
+var MACHETES = 'machetes';
+var TALISMANS = 'talismans';
 var BLADES = 'blades';
 var RINGS = 'rings';
 var SHIELDS = 'shields';
