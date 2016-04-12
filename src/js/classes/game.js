@@ -85,11 +85,11 @@ Game.prototype.Init = function(scope) {
   this.buildings = Building.initializeBuildings(this);
 
   // Monsters
-  this.monsters;
-  this.monsters[STABLE] = {};
-  this.monsters[RAID] = {};
-  this.monsters[RAID_RALLY] = {};
-  this.monsters[TOWER] = {};
+  this.monsterCounts = {};
+  this.monsterCounts[STABLE] = {};
+  this.monsterCounts[RAID] = {};
+  this.monsterCounts[RAID_RALLY] = {};
+  this.monsterCounts[TOWER] = {};
 
 };
 
@@ -356,30 +356,50 @@ Game.prototype.getExpeditionOutcome = function() {
   var strength = this.getMinionStatSum(EXPEDITION, STRENGTH);
   var skill = this.getMinionStatSum(EXPEDITION, SKILL);
 
-  var loot;
-  var casualty;
+  // TODO: balance
+  var casualty = Math.min(1, level ^ 2 / strength);
+  var loot = skill * (120 + 2 * level + level ^ 2) * (1 - casualty);
+
+  this.applyCasualties(EXPEDITION, casualty);
+  this.addGold(loot);
 
   for (var i = 0; i < MONSTERS.length; i++) {
     var monsterName = MONSTERS[i];
     var monster = this.monsters[monsterName];
-    if (monster.level >= this.expeditionLevel) {
-
-      monsters[monsterName] =
+    var diff = monster.level - this.expeditionLevel;
+    if (diff > 0) {
+      // TODO: balance
+      var count = this.monsterCounts[STABLE][monsterName];
+      var found = Math.floor(Math.random() * 1.5 * diff);
+      this.monsterCounts[STABLE][monsterName] = count ? count + found : found;
     } else {
       break;
     }
   }
-  var monsters = {};
+
+
 };
 
 Game.prototype.getRaidOutcome = function() {
   var damage = this.getMinionStatSum(RAID, DAMAGE) + this.getMonsterStatSum(RAID, DAMAGE);
   var durability = this.getMinionStatSum(RAID, DURABILITY) + this.getMonsterStatSum(RAID, DURABILITY);
+
+  var casualty = Math.min(1, level ^ 2 / durability);
+  var loot = damage * (180 + 2 * level + level ^ 2) * (1 - casualty);
+
+  this.applyCasualties(RAID, casualty);
+  this.addGold(loot);
 };
 
 Game.prototype.getWaveOutcome = function() {
   var damage = this.getMinionStatSum(TOWER, DAMAGE) + this.getMonsterStatSum(TOWER, DAMAGE);
   var durability = this.getMinionStatSum(TOWER, DURABILITY) + this.getMonsterStatSum(TOWER, DAMAGE);
+
+  var casualty = Math.min(1, level ^ 2 / durability);
+  var loot = damage * (150 + 2 * level + level ^ 2) * (1 - casualty);
+
+  this.applyCasualties(TOWER, casualty);
+  this.addGold(loot);
 };
 
 /////////////////////////////////////////////////////////
@@ -395,15 +415,45 @@ Game.prototype.getMinionStatSum = function(buildingName, stat) {
 };
 
 Game.prototype.getMonsterStatSum = function(buildingName, stat) {
-  var monsters = this.monsters[buildingName];
+  var monsters = this.monsterCounts[buildingName];
   var sum = 0;
   for (var i = 0; i < MONSTERS.length; i++) {
     var monsterName = MONSTERS[i];
     var count = monsters[monsterName];
     if (count) {
-      var monster = this.monsters[monsterName];
+      var monster = this.monsterCounts[monsterName];
       sum += count * monster.stats[stat];
     }
   }
   return sum;
+};
+
+Game.prototype.applyCasualties = function(buildingName, casualty) {
+  var minions = this.minions[buildingName];
+  var monsters = this.monsterCounts[buildingName];
+
+  var i, type, monster, count, lost;
+  var minionsLost = 0;
+  var monstersLost = 0;
+  for (i = 0; i < MINION_TYPES.length; i++) {
+    type = MINION_TYPES[i];
+    count = minions[type]
+    if (count) {
+      lost = Math.floor(count * (Math.random() * 0.4 + 0.8) * casualty);
+      minions[type] = Math.max(0, count - lost);
+      minionsLost += count - minions[type];
+    }
+  }
+  minions[ALL] -= minionsLost;
+
+  for (i = 0; i < MONSTERS.length; i++) {
+    monster = MONSTERS[i];
+    count = monsters[monster];
+    if (count) {
+      lost = Math.floor(count * (Math.random() * 0.4 + 0.8) * casualty);
+      monsters[monster] = Math.max(0, count - lost);
+      monstersLost += count - monsters[monster];
+    }
+  }
+  minions[ALL] -= minionsLost;
 };
